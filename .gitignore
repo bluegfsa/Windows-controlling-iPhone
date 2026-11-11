@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 运行产物
+artifacts/
+*.png
+*.jpg
+
+# 敏感文件：绝不入库
+*.ipa
+*.mobileprovision
+*.p12
+*.pem
+selfIdentity.plist
+.state/
+
+# 系统
+Thumbs.db
+.DS_Store
+desktop.ini

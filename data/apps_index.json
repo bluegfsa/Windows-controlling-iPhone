@@ -1,0 +1,378 @@
+{
+ "note": "中文名 → bundle id，来自本机已装 App。换机后用 `phone.cmd apps` 重建。",
+ "by_name": {
+  "Developer": "developer.apple.wwdc-Release",
+  "UU远程": "com.netease.uuremote",
+  "爱思全能版": "com.ownbook.notes",
+  "小红书": "com.xingin.discover",
+  "OZON": "ru.ozon.OzonStore",
+  "铁路12306": "cn.12306.rails12306",
+  "京东": "com.360buy.jdmobile",
+  "网易邮箱大师": "com.netease.mailmaster",
+  "番茄小说": "com.dragon.read",
+  "拼多多": "com.xunmeng.pinduoduo",
+  "吾记": "com.wujiteam.wuji",
+  "网易云音乐": "com.netease.cloudmusic",
+  "抖音": "com.ss.iphone.ugc.Aweme",
+  "Shadowrocket": "com.liguangming.Shadowrocket",
+  "Gmail": "com.google.Gmail",
+  "抖店": "com.ss.ios.merchant",
+  "TikTok": "com.zhiliaoapp.musically",
+  "Bluelink": "com.hyundai-motor.cn.bluelink",
+  "阿里巴巴": "com.alibaba.wireless",
+  "录风者": "com.vidure.6zhentan",
+  "WorkBuddy": "com.tencent.workbuddy.app",
+  "千牛": "com.taobao.sellerplatform",
+  "闲鱼": "com.taobao.fleamarket",
+  "手机公积金": "com.shineyue.shoujigjj",
+  "DeepSeek": "com.deepseek.chat",
+  "知乎": "com.zhihu.ios",
+  "扫雷世界": "com.huahua.saolei",
+  "WebDriverAgentRunner-Runner": "com.facebook.WebDriverAgentRunner.xctrunner",
+  "小块": "com.smallblocks.app",
+  "竞技联盟德州扑克": "com.sohooltd.sohoopoker",
+  "QQ": "com.tencent.mqq",
+  "美团": "com.meituan.imeituan",
+  "中国移动": "cn.10086.app",
+  "阿里云": "com.aliyun.wstudio.amc.AliyunMobileApp",
+  "豆瓣": "com.douban.frodo",
+  "中国农业银行": "com.bankabc.iphonerelease",
+  "淘宝": "com.taobao.taobao4iphone",
+  "豆包": "com.bot.doubao",
+  "X": "com.atebits.Tweetie2",
+  "湖北农信": "cn.com.hbnxmbank.ios",
+  "微信输入法": "com.tencent.wetype",
+  "MAN共享摩托": "com.jizhisilu.ManMotorcycle",
+  "Telegram": "ph.telegra.Telegraph",
+  "Outlook": "com.microsoft.Office.Outlook",
+  "交管12123": "com.tmri.12123",
+  "Ozon Seller": "ru.ozon.sellerApp",
+  "摩托范": "com.jdd.motorfans",
+  "中国广电": "com.cbn.app",
+  "高德地图": "com.autonavi.amap",
+  "TestFlight": "com.apple.TestFlight",
+  "‎WhatsApp": "net.whatsapp.WhatsApp",
+  "满满钓鱼预约": "com.FullFishing.Reservation",
+  "懂车帝": "com.ss.ios.auto",
+  "企查查": "com.ioubo.ienterprise",
+  "支付宝": "com.alipay.iphoneclient",
+  "数独九宫格": "com.rise.iostjxhz",
+  "微信": "com.tencent.xin",
+  "魔方达人": "cn.chen.rubik",
+  "KiKUU": "com.ld.kikuu",
+  "米家": "com.xiaomi.mihome",
+  "摩途": "com.motu.motumap"
+ },
+ "apps": [
+  {
+   "bundle_id": "developer.apple.wwdc-Release",
+   "name": "Developer",
+   "raw": "Developer 11.1.1"
+  },
+  {
+   "bundle_id": "com.netease.uuremote",
+   "name": "UU远程",
+   "raw": "UU远程 4.16.2"
+  },
+  {
+   "bundle_id": "com.ownbook.notes",
+   "name": "爱思全能版",
+   "raw": "爱思全能版 2.2.0"
+  },
+  {
+   "bundle_id": "com.xingin.discover",
+   "name": "小红书",
+   "raw": "小红书 8.69.4"
+  },
+  {
+   "bundle_id": "ru.ozon.OzonStore",
+   "name": "OZON",
+   "raw": "OZON 19.34.0"
+  },
+  {
+   "bundle_id": "cn.12306.rails12306",
+   "name": "铁路12306",
+   "raw": "铁路12306 5.9.3"
+  },
+  {
+   "bundle_id": "com.360buy.jdmobile",
+   "name": "京东",
+   "raw": "京东 170515"
+  },
+  {
+   "bundle_id": "com.netease.mailmaster",
+   "name": "网易邮箱大师",
+   "raw": "网易邮箱大师 7.22.2"
+  },
+  {
+   "bundle_id": "com.dragon.read",
+   "name": "番茄小说",
+   "raw": "番茄小说 6.1.9"
+  },
+  {
+   "bundle_id": "com.xunmeng.pinduoduo",
+   "name": "拼多多",
+   "raw": "拼多多 7.64.0"
+  },
+  {
+   "bundle_id": "com.wujiteam.wuji",
+   "name": "吾记",
+   "raw": "吾记 5.6"
+  },
+  {
+   "bundle_id": "com.netease.cloudmusic",
+   "name": "网易云音乐",
+   "raw": "网易云音乐 9.4.70"
+  },
+  {
+   "bundle_id": "com.ss.iphone.ugc.Aweme",
+   "name": "抖音",
+   "raw": "抖音 37.9.0"
+  },
+  {
+   "bundle_id": "com.liguangming.Shadowrocket",
+   "name": "Shadowrocket",
+   "raw": "Shadowrocket 2.2.80"
+  },
+  {
+   "bundle_id": "com.google.Gmail",
+   "name": "Gmail",
+   "raw": "Gmail 6.0.260720"
+  },
+  {
+   "bundle_id": "com.ss.ios.merchant",
+   "name": "抖店",
+   "raw": "抖店 13.5.0"
+  },
+  {
+   "bundle_id": "com.zhiliaoapp.musically",
+   "name": "TikTok",
+   "raw": "TikTok 43.9.0"
+  },
+  {
+   "bundle_id": "com.hyundai-motor.cn.bluelink",
+   "name": "Bluelink",
+   "raw": "Bluelink 5.00"
+  },
+  {
+   "bundle_id": "com.alibaba.wireless",
+   "name": "阿里巴巴",
+   "raw": "阿里巴巴 11.90.3"
+  },
+  {
+   "bundle_id": "com.vidure.6zhentan",
+   "name": "录风者",
+   "raw": "录风者 2.11.1"
+  },
+  {
+   "bundle_id": "com.tencent.workbuddy.app",
+   "name": "WorkBuddy",
+   "raw": "WorkBuddy 2.7.1"
+  },
+  {
+   "bundle_id": "com.taobao.sellerplatform",
+   "name": "千牛",
+   "raw": "千牛 9.8.410"
+  },
+  {
+   "bundle_id": "com.taobao.fleamarket",
+   "name": "闲鱼",
+   "raw": "闲鱼 7.20.80"
+  },
+  {
+   "bundle_id": "com.shineyue.shoujigjj",
+   "name": "手机公积金",
+   "raw": "手机公积金 4.6.1"
+  },
+  {
+   "bundle_id": "com.deepseek.chat",
+   "name": "DeepSeek",
+   "raw": "DeepSeek 1.2.4"
+  },
+  {
+   "bundle_id": "com.zhihu.ios",
+   "name": "知乎",
+   "raw": "知乎 9.5.0"
+  },
+  {
+   "bundle_id": "com.huahua.saolei",
+   "name": "扫雷世界",
+   "raw": "扫雷世界 3.6"
+  },
+  {
+   "bundle_id": "com.facebook.WebDriverAgentRunner.xctrunner",
+   "name": "WebDriverAgentRunner-Runner",
+   "raw": "WebDriverAgentRunner-Runner 1.0"
+  },
+  {
+   "bundle_id": "com.smallblocks.app",
+   "name": "小块",
+   "raw": "小块 0.1.0"
+  },
+  {
+   "bundle_id": "com.sohooltd.sohoopoker",
+   "name": "竞技联盟德州扑克",
+   "raw": "竞技联盟德州扑克 9.0.2"
+  },
+  {
+   "bundle_id": "com.tencent.mqq",
+   "name": "QQ",
+   "raw": "QQ 9.2.70"
+  },
+  {
+   "bundle_id": "com.meituan.imeituan",
+   "name": "美团",
+   "raw": "美团 12.29.202"
+  },
+  {
+   "bundle_id": "cn.10086.app",
+   "name": "中国移动",
+   "raw": "中国移动 11.9.5"
+  },
+  {
+   "bundle_id": "com.aliyun.wstudio.amc.AliyunMobileApp",
+   "name": "阿里云",
+   "raw": "阿里云 7.12.0"
+  },
+  {
+   "bundle_id": "com.douban.frodo",
+   "name": "豆瓣",
+   "raw": "豆瓣 7.94.0"
+  },
+  {
+   "bundle_id": "com.bankabc.iphonerelease",
+   "name": "中国农业银行",
+   "raw": "中国农业银行 11.2.0"
+  },
+  {
+   "bundle_id": "com.taobao.taobao4iphone",
+   "name": "淘宝",
+   "raw": "淘宝 10.46.1"
+  },
+  {
+   "bundle_id": "com.bot.doubao",
+   "name": "豆包",
+   "raw": "豆包 12.0.0"
+  },
+  {
+   "bundle_id": "com.atebits.Tweetie2",
+   "name": "X",
+   "raw": "X 11.71.1"
+  },
+  {
+   "bundle_id": "cn.com.hbnxmbank.ios",
+   "name": "湖北农信",
+   "raw": "湖北农信 5.1.7"
+  },
+  {
+   "bundle_id": "com.tencent.wetype",
+   "name": "微信输入法",
+   "raw": "微信输入法 3.5.3"
+  },
+  {
+   "bundle_id": "com.jizhisilu.ManMotorcycle",
+   "name": "MAN共享摩托",
+   "raw": "MAN共享摩托 4.8.2"
+  },
+  {
+   "bundle_id": "ph.telegra.Telegraph",
+   "name": "Telegram",
+   "raw": "Telegram 12.5.1"
+  },
+  {
+   "bundle_id": "com.microsoft.Office.Outlook",
+   "name": "Outlook",
+   "raw": "Outlook 5.2639.0"
+  },
+  {
+   "bundle_id": "com.tmri.12123",
+   "name": "交管12123",
+   "raw": "交管12123 3.5.0"
+  },
+  {
+   "bundle_id": "ru.ozon.sellerApp",
+   "name": "Ozon Seller",
+   "raw": "Ozon Seller 4.36.0"
+  },
+  {
+   "bundle_id": "com.facebook.WebDriverAgentRunner.xctrunner.YOUR_TEAM_ID",
+   "name": "WebDriverAgentRunner-Runner",
+   "raw": "WebDriverAgentRunner-Runner 1.0"
+  },
+  {
+   "bundle_id": "com.jdd.motorfans",
+   "name": "摩托范",
+   "raw": "摩托范 3.62.20"
+  },
+  {
+   "bundle_id": "com.cbn.app",
+   "name": "中国广电",
+   "raw": "中国广电 2.0.4"
+  },
+  {
+   "bundle_id": "com.autonavi.amap",
+   "name": "高德地图",
+   "raw": "高德地图 16.12.3"
+  },
+  {
+   "bundle_id": "com.apple.TestFlight",
+   "name": "TestFlight",
+   "raw": "TestFlight 4.4.1"
+  },
+  {
+   "bundle_id": "net.whatsapp.WhatsApp",
+   "name": "‎WhatsApp",
+   "raw": "‎WhatsApp 26.12.78"
+  },
+  {
+   "bundle_id": "com.FullFishing.Reservation",
+   "name": "满满钓鱼预约",
+   "raw": "满满钓鱼预约 1.0"
+  },
+  {
+   "bundle_id": "com.ss.ios.auto",
+   "name": "懂车帝",
+   "raw": "懂车帝 8.7.4"
+  },
+  {
+   "bundle_id": "com.ioubo.ienterprise",
+   "name": "企查查",
+   "raw": "企查查 17.8.0"
+  },
+  {
+   "bundle_id": "com.alipay.iphoneclient",
+   "name": "支付宝",
+   "raw": "支付宝 10.8.36"
+  },
+  {
+   "bundle_id": "com.rise.iostjxhz",
+   "name": "数独九宫格",
+   "raw": "数独九宫格 8.1"
+  },
+  {
+   "bundle_id": "com.tencent.xin",
+   "name": "微信",
+   "raw": "微信 8.0.75"
+  },
+  {
+   "bundle_id": "cn.chen.rubik",
+   "name": "魔方达人",
+   "raw": "魔方达人 1.3"
+  },
+  {
+   "bundle_id": "com.ld.kikuu",
+   "name": "KiKUU",
+   "raw": "KiKUU 30.1.10"
+  },
+  {
+   "bundle_id": "com.xiaomi.mihome",
+   "name": "米家",
+   "raw": "米家 9.7.202"
+  },
+  {
+   "bundle_id": "com.motu.motumap",
+   "name": "摩途",
+   "raw": "摩途 3.6.9"
+  }
+ ]
+}

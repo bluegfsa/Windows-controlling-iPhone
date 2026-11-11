@@ -1,0 +1,4 @@
+# Driving the phone needs exactly one dependency.
+# (requirements-full.txt adds mcp + pymobiledevice3, only needed for the MCP
+#  server and for re-signing WDA with fix-input.)
+requests>=2.31

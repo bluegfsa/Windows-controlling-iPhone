@@ -1,0 +1,17 @@
+这里是 PhoneKit 引擎（SideTap，MIT 许可）的原始文档，保留给你查阅细节用。
+
+注意：它们描述的是 SideTap 自己的入口，和本包的用法不一样——
+  · 原文里的 `phone-harness up` / `phone-harness doctor`  → 本包用 `phone.cmd up` / `phone.cmd doctor`
+  · 原文里的可视化面板（viewer，:8770）、审批门（SEND_APPROVAL）、MCP 服务器 → 本包默认不启用
+  · 原文假设你自己配 Node/npm 装 go-ios → 本包已内置 bin/ios.exe
+  · 原文的 7 天免费签名 → 本机已用付费账号签成 364 天
+
+要干活请看：
+  README.md
+  docs/03-命令参考.md
+  docs/05-给DSH的使用说明.md
+
+—— 以下三份是原文，仅供理解引擎内部实现 ——
+SideTap-README.md    功能全景、设计动机
+SideTap-DESIGN.md    模块划分与取舍
+SideTap-CLAUDE.md    给编码 Agent 的逐文件说明（最长，实现细节最全）

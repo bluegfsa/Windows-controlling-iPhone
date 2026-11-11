@@ -1,0 +1,9 @@
+{
+  "name": "look-around",
+  "note": "只观察、不操作：适合任务开始时判断当前状态。5 秒内给出 App + 屏幕文字 + 一张截图。",
+  "steps": [
+    {"cmd": "app"},
+    {"cmd": "ocr", "args": {"limit": 25}},
+    {"cmd": "shot", "args": {"path": "当前屏幕.png"}}
+  ]
+}

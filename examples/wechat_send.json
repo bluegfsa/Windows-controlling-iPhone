@@ -1,0 +1,29 @@
+{
+  "name": "wechat-send",
+  "note": "微信给指定联系人发一条消息。contact / text 两个字段改掉即可复用（未验证过这台手机的微信布局，首次跑请逐步确认坐标）。",
+  "contact": "文件传输助手",
+  "text": "测试消息：来自 PhoneKit",
+  "steps": [
+    {"cmd": "open", "args": {"app": "com.tencent.xin"}},
+    {"cmd": "wait_stable", "args": {"timeout": 8}},
+    {"cmd": "ocr", "args": {"grep": "搜索", "limit": 6}},
+
+    {"cmd": "tap_text", "args": {"text": "搜索"}},
+    {"cmd": "wait_text", "args": {"text": "搜索", "timeout": 6}},
+    {"cmd": "type", "args": {"text": "{{contact}}"}},
+    {"cmd": "wait_stable", "args": {"timeout": 6}},
+    {"cmd": "ocr", "args": {"grep": "{{contact}}", "limit": 8}},
+    {"cmd": "shot", "args": {"path": "1-搜索联系人.png"}},
+
+    {"cmd": "tap_text", "args": {"text": "{{contact}}", "index": 0}},
+    {"cmd": "wait_stable", "args": {"timeout": 8}},
+    {"cmd": "ocr", "args": {"limit": 20}},
+
+    {"cmd": "tap", "args": {"x": 195, "y": 800}},
+    {"cmd": "type", "args": {"text": "{{text}}"}},
+    {"cmd": "shot", "args": {"path": "2-发送前.png"}},
+    {"cmd": "tap_text", "args": {"text": "发送"}},
+    {"cmd": "wait_text", "args": {"text": "{{text}}", "timeout": 10}},
+    {"cmd": "shot", "args": {"path": "3-发送后.png"}}
+  ]
+}
