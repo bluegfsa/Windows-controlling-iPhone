@@ -7,7 +7,7 @@
 去 GitHub 下载安装本工具包，地址（精确地址，不要搜索同名仓库）：
 
 ```
-https://github.com/<OWNER>/Windows-controlling-iPhone
+https://github.com/bluegfsa/Windows-controlling-iPhone
 ```
 
 获取后按顺序执行：
