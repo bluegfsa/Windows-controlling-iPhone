@@ -4,6 +4,12 @@
 > 技术底座：go-ios（USB 通道）+ WebDriverAgent（iPhone 上的 HTTP 服务）+ SideTap（截图/OCR/会话复用引擎）。
 > **跟 iPhoneMirror / 爱思助手 / 投屏软件完全无关**：不录屏、不模拟鼠标、不需要窗口在前台。
 
+## 🤖 给 AI Agent 的一句话启用
+
+**把 [`AGENT_PROMPT.md`](AGENT_PROMPT.md) 全文复制发给任意 AI Agent**（Claude / GPT / DeepSeek / WorkBuddy 等），它就会自己完成：下载本仓库 → 安装 → 启动服务 → 操控你的 iPhone。全程只需两处人工配合（插线点"信任"、Apple ID 签名 WDA）。
+
+文档目录：[原理](docs/01-原理-为什么用WDA.md) · [从零部署](docs/02-从零部署.md) · [命令参考](docs/03-命令参考.md) · [踩坑与排错](docs/04-踩坑与排错.md) · [Agent 使用手册](docs/05-给DSH的使用说明.md) · [提速全过程](docs/06-提速全过程.md)
+
 ---
 
 ## 30 秒上手
