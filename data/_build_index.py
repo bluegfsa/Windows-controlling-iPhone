@@ -8,8 +8,8 @@ import json
 import re
 from pathlib import Path
 
-SRC = Path(r"C:\Users\Administrator\Downloads\SideTap\.state\apps_cache.json")
-OUT = Path(r"C:\Users\Administrator\Downloads\PhoneKit\data\apps_index.json")
+SRC = Path(r"C:\path\to\SideTap\.state\apps_cache.json")
+OUT = Path(r"C:\path\to\PhoneKit\data\apps_index.json")
 
 rows = json.loads(SRC.read_text(encoding="utf-8"))
 by_name: dict[str, str] = {}
