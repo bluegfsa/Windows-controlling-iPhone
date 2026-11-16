@@ -83,9 +83,24 @@ def service_alive(timeout: float = 1.0) -> bool:
     return _http("/health", timeout=timeout) is not None
 
 
-def wda_alive(timeout: float = 2.0) -> bool:
+def wda_alive(timeout: float = 6.0) -> bool:
+    """Is WDA answering?
+
+    Two probes, cheapest first. A TCP connect to 8100 is ~1ms and tells us the
+    forward is alive; /status is authoritative but measured at 240ms warm and
+    up to 2.3s when the forward is up with nothing behind it (a 502). The old
+    2s budget sat inside that spread, so a slow-but-healthy link read as down
+    and every command paid a full 15-20s rebuild.
+    """
+    import socket
     import urllib.request
 
+    host, port = config.WDA_HOST, config.WDA_PORT
+    try:
+        with socket.create_connection((host, port), timeout=0.4):
+            pass
+    except OSError:
+        return False
     try:
         with urllib.request.urlopen(config.WDA_URL + "/status", timeout=timeout) as r:
             return r.status == 200
@@ -387,7 +402,9 @@ def cmd_status(_a) -> int:
     info = {"service": service_alive(), "wda": wda_alive()}
     if info["wda"]:
         try:
-            info["app"] = H.current_app().get("bundleId")
+            bid = H.current_app().get("bundleId")
+            info["app"] = bid
+            info["app_name"] = name_for_bundle(bid) if bid else None
             info["screen"] = H.screen_info()
         except Exception as exc:  # noqa: BLE001
             info["note"] = str(exc)
@@ -399,10 +416,43 @@ def cmd_up(_a) -> int:
     return out({"wda": True, "url": config.WDA_URL})
 
 
+def _kill_stray_ios() -> list[int]:
+    """Kill leftover go-ios processes after a shutdown.
+
+    admin.down() stops tunnel, runwda and both forwards, but a child that was
+    orphaned earlier (a killed CLI run, a reaped detached spawn) can survive and
+    keep holding the wintun adapter. Sweeping every ios.exe is the honest
+    definition of "down"; `up` re-establishes the tunnel in a couple of seconds.
+
+    PIDs come from `tasklist` rather than `wmic`: wmic is deprecated and is on
+    the program blacklist of several locked-down Windows images, where it fails
+    silently. tasklist is present everywhere and needs no command line, which
+    we do not need here anyway — everything named ios.exe goes.
+    """
+    killed: list[int] = []
+    try:
+        p = subprocess.run(
+            ["tasklist", "/FI", "IMAGENAME eq ios.exe", "/FO", "CSV", "/NH"],
+            capture_output=True, timeout=20,
+        )
+    except Exception:  # noqa: BLE001
+        return killed
+    out_txt = p.stdout.decode("utf-8", "replace") or p.stdout.decode("gbk", "replace")
+    for pid in re.findall(r'"ios\.exe","(\d+)"', out_txt, re.I):
+        try:
+            subprocess.run(["taskkill", "/PID", pid, "/F"],
+                           capture_output=True, timeout=10)
+            killed.append(int(pid))
+        except Exception:  # noqa: BLE001
+            continue
+    return killed
+
+
 def cmd_down(_a) -> int:
     admin.down()
     _http("/down", "POST", timeout=30)
-    return out({"stopped": True})
+    stray = _kill_stray_ios()
+    return out({"stopped": True, "killed_ios": stray})
 
 
 def cmd_doctor(_a) -> int:
@@ -412,6 +462,29 @@ def cmd_doctor(_a) -> int:
 
 
 _APP_INDEX: dict | None = None
+_APP_NAMES: dict | None = None
+
+
+def name_for_bundle(bundle_id: str) -> str | None:
+    """bundle id → display name, from the shipped index.
+
+    WDA's active-app reply carries the bundle id and a pid but often an empty
+    `name`, which reads like "the phone is showing nothing" in status output.
+    The index already ships every installed app, so fill the gap locally.
+    """
+    global _APP_NAMES
+    if not bundle_id:
+        return None
+    if bundle_id == "com.apple.springboard":
+        return "主屏"  # not an "app" in the index, but the commonest answer
+    if _APP_NAMES is None:
+        p = ROOT / "data" / "apps_index.json"
+        try:
+            names = json.loads(p.read_text(encoding="utf-8"))["by_name"]
+            _APP_NAMES = {bid: nm for nm, bid in names.items()}
+        except Exception:  # noqa: BLE001
+            _APP_NAMES = {}
+    return _APP_NAMES.get(bundle_id)
 
 
 def resolve_app(name: str) -> str:
@@ -461,7 +534,11 @@ def cmd_apps(_a) -> int:
 
 def cmd_app(_a) -> int:
     ensure_link()
-    return out({"app": H.current_app()})
+    app = H.current_app()
+    if not app.get("name"):
+        bid = app.get("bundleId") or ""
+        app["name"] = name_for_bundle(bid) or bid
+    return out({"app": app})
 
 
 def cmd_home(_a) -> int:
@@ -499,8 +576,16 @@ def cmd_shot(a) -> int:
     return out(res)
 
 
+def _apply_depth(a) -> None:
+    """Honour `--depth N` on a read command (see config.WDA_SNAPSHOT_DEPTH)."""
+    depth = getattr(a, "depth", None)
+    if depth:
+        H.client().set_snapshot_depth(int(depth))
+
+
 def cmd_ocr(a) -> int:
     ensure_link()
+    _apply_depth(a)
     t = time.time()
     rows = H.ocr()
     if a.grep:
@@ -513,6 +598,7 @@ def cmd_ocr(a) -> int:
 
 def cmd_find(a) -> int:
     ensure_link()
+    _apply_depth(a)
     rows = H.find_text(a.text, exact=a.exact)
     return out({"query": a.text, "count": len(rows), "rows": H.compact(rows, 20)},
                0 if rows else 1)
@@ -660,6 +746,7 @@ def cmd_wait_stable(a) -> int:
 
 def cmd_tree(a) -> int:
     ensure_link()
+    _apply_depth(a)
     tree = H.ui_tree()
     if a.out:
         p = Path(a.out) if Path(a.out).is_absolute() else ARTIFACTS / a.out
@@ -736,7 +823,7 @@ def cmd_flow(a) -> int:
     spec = json.loads(path.read_text(encoding="utf-8"))
     steps = spec.get("steps", spec)
     # Simple templating so one example covers many targets: any top-level string
-    # key becomes {{key}} inside the steps (e.g. {"dest": "广州塔"} -> "{{dest}}").
+    # key becomes {{key}} inside the steps (e.g. {"dest": "夏良村"} -> "{{dest}}").
     if isinstance(spec, dict):
         for key, val in spec.items():
             if not isinstance(val, str) or key in ("name", "note"):
@@ -838,11 +925,15 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("ocr", help="visible text + coordinates")
     s.add_argument("--limit", type=int, default=60)
     s.add_argument("--grep", default=None)
+    s.add_argument("--depth", type=int, default=None,
+                   help="snapshot depth for this read (default 8; 11+ costs ~6-9s)")
     s.set_defaults(fn=cmd_ocr)
 
     s = sub.add_parser("find", help="locate text without tapping")
     s.add_argument("text")
     s.add_argument("--exact", action="store_true")
+    s.add_argument("--depth", type=int, default=None,
+                   help="snapshot depth for this read (default 8; 11+ costs ~6-9s)")
     s.set_defaults(fn=cmd_find)
 
     s = sub.add_parser("tap", help="tap absolute coordinates")
@@ -893,6 +984,8 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("tree", help="accessibility tree")
     s.add_argument("--out", default=None)
     s.add_argument("--limit", type=int, default=80)
+    s.add_argument("--depth", type=int, default=None,
+                   help="snapshot depth for this read (default 8; 11+ costs ~6-9s)")
     s.set_defaults(fn=cmd_tree)
 
     s = sub.add_parser("flow", help="run a JSON step list in one process (fast)")

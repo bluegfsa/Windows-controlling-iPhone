@@ -40,10 +40,11 @@ def get(key: str, default: str | None = None) -> str | None:
 STATE_DIR = REPO_ROOT / (get("SIDETAP_STATE_DIR") or ".state")
 SIDETAP_UDID = get("SIDETAP_UDID")  # unset = first connected phone, as ever
 
+WDA_HOST = get("WDA_HOST") or "127.0.0.1"
 WDA_PORT = int(get("WDA_PORT", "8100") or "8100")
 MJPEG_PORT = int(get("MJPEG_PORT", "9100") or "9100")  # noqa: vulture
 
-WDA_URL = f"http://127.0.0.1:{WDA_PORT}"
+WDA_URL = f"http://{WDA_HOST}:{WDA_PORT}"
 
 # go-ios's tunnel agent HTTP port, shared by the tunnel it starts and every
 # go-ios call that looks the tunnel up. go-ios defaults to 60105, inside
@@ -78,6 +79,19 @@ VIEWER_PORT = int(get("VIEWER_PORT", "8770") or "8770")  # noqa: vulture
 # ~0.7s per swipe. idle=2 keeps settle protection on genuinely busy screens.
 WDA_IDLE_WAIT = float(get("WDA_IDLE_WAIT", "2") or "2")  # noqa: vulture  (read by wda_client/viewer)
 WDA_ANIM_COOLOFF = float(get("WDA_ANIM_COOLOFF", "0") or "0")  # noqa: vulture  (read by wda_client)
+
+# Accessibility snapshot depth, applied with the session.
+# WDA's own default is 50, i.e. "dump everything", and on a plain home screen
+# that costs 8.8s / 552KB per read — which every tree/ocr/find call pays.
+# Measured on device (iPhone 13, iOS 26.3.1), same screen, depth → time/size:
+#   8 → 1.6s / 105KB   9 → 2.5s / 223KB   10 → 3.5s / 292KB
+#  11 → 5.9s / 397KB  12 → 8.1s / 510KB   20 → 8.8s / 539KB
+# Depth 8 still returns every home-screen icon and ordinary in-app content, so
+# it is the default. Raise it per-run with PHONEKIT_SNAPSHOT_DEPTH (or
+# `phone.cmd tree --depth 12`) only for genuinely deep screens, and expect the
+# cliff above. Heavy apps (WeChat, TikTok, Maps) block snapshots at ANY depth —
+# that is a different failure, handled by the OCR fallback.
+WDA_SNAPSHOT_DEPTH = int(get("PHONEKIT_SNAPSHOT_DEPTH", "8") or "8")
 
 # Scripted finger contact for a tap, in ms. 80 is the shipped value and stays
 # the default: the hold is pure wait (~20% of a bare tap budget), but a contact

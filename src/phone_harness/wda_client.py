@@ -409,6 +409,11 @@ class WDAClient:
         shared = _read_shared_session()
         if shared:
             self.session_id = shared  # dead ids heal in _session_request
+            # An adopted session carries whatever settings its creator left —
+            # including WDA's 50-deep default, which is the whole 9s-per-read
+            # problem. Cheap to check (one marker read) and skipped when the
+            # marker already matches, so warm runs pay nothing.
+            self._apply_settings(shared)
             return shared
         return self._create_session()
 
@@ -431,35 +436,68 @@ class WDAClient:
             raise WDAError(f"Could not create a WDA session: {value!r}")
         self.session_id = sid
         _write_shared_session(sid)
+        self._apply_settings(sid, force=True)
+        return sid
+
+    def _desired_settings(self) -> dict[str, Any]:
+        settings: dict[str, Any] = {
+            "waitForIdleTimeout": config.WDA_IDLE_WAIT,
+            "animationCoolOffTimeout": config.WDA_ANIM_COOLOFF,
+            # Without this the session inherits WDA's default depth of 50 and
+            # every tree/ocr/find read costs ~9s (see config.WDA_SNAPSHOT_DEPTH
+            # for the measurements).
+            "snapshotMaxDepth": config.WDA_SNAPSHOT_DEPTH,
+            # /wda/keys is one request from here and len(text)/rate seconds
+            # on the phone, so the rate is the whole cost of a long paste.
+            # Config default is WDA's own 60, i.e. a no-op until tuned.
+            "maxTypingFrequency": config.WDA_TYPING_FREQ,
+            # The stream settings ride with the session like the rest, and
+            # this never applied them: every mint (the 30s-idle remint,
+            # unlock, an eviction heal) dropped the live view to WDA's
+            # defaults until the viewer's next 5s /api/status tick called
+            # configure_mjpeg. That call stays, for a session this process
+            # ADOPTED rather than created.
+            "mjpegServerFramerate": config.MJPEG_FPS,
+            "mjpegServerScreenshotQuality": config.MJPEG_QUALITY,
+            "mjpegScalingFactor": config.MJPEG_SCALE,
+        }
+        if config.WDA_ACCESSIBILITY_DEADLINE > 0:
+            settings["accessibilityDeadline"] = config.WDA_ACCESSIBILITY_DEADLINE
+        return settings
+
+    def _apply_settings(self, sid: str, force: bool = False) -> None:
+        """Push the session settings, also onto a session this process ADOPTED.
+
+        Settings ride with the session, so the creator's push is lost the
+        moment the session outlives the process: `.state/wda_session` hands the
+        next run the same id, and that run inherits whatever depth the previous
+        one left behind. That is exactly how a 50-deep dump survived a restart
+        and made every command 7s slower than it should be. A marker file keeps
+        the check cheap (one read) so a warm run pays nothing.
+        """
+        desired = self._desired_settings()
+        marker = config.STATE_DIR / "wda_settings.json"
+        if not force:
+            try:
+                cached = json.loads(marker.read_text())
+                if cached.get("session") == sid and cached.get("values") == desired:
+                    return
+            except Exception:  # noqa: BLE001 — missing/garbled marker just means "apply"
+                pass
         try:
-            # Settings ride with the session, so only the creator applies them.
-            settings = {
-                "waitForIdleTimeout": config.WDA_IDLE_WAIT,
-                "animationCoolOffTimeout": config.WDA_ANIM_COOLOFF,
-                # /wda/keys is one request from here and len(text)/rate seconds
-                # on the phone, so the rate is the whole cost of a long paste.
-                # Config default is WDA's own 60, i.e. a no-op until tuned.
-                "maxTypingFrequency": config.WDA_TYPING_FREQ,
-                # The stream settings ride with the session like the rest, and
-                # this never applied them: every mint (the 30s-idle remint,
-                # unlock, an eviction heal) dropped the live view to WDA's
-                # defaults until the viewer's next 5s /api/status tick called
-                # configure_mjpeg. That call stays, for a session this process
-                # ADOPTED rather than created.
-                "mjpegServerFramerate": config.MJPEG_FPS,
-                "mjpegServerScreenshotQuality": config.MJPEG_QUALITY,
-                "mjpegScalingFactor": config.MJPEG_SCALE,
-            }
-            if config.WDA_ACCESSIBILITY_DEADLINE > 0:
-                settings["accessibilityDeadline"] = config.WDA_ACCESSIBILITY_DEADLINE
             self._request(
                 "POST",
                 f"/session/{sid}/appium/settings",
-                {"settings": settings},
+                {"settings": desired},
             )
+            try:
+                config.STATE_DIR.mkdir(exist_ok=True)
+                marker.write_text(json.dumps({"session": sid, "values": desired}))
+            except OSError:
+                pass
         except WDAError as exc:
             # Still best effort — a session on default waits is slow, not
-            # broken. But these seven keys are the live view and every gesture
+            # broken. But these keys are the live view and every gesture
             # wait, so a silent miss reads as "the viewer is laggy today" with
             # nothing to grep. Not log_event: that feed is things that MOVED
             # the phone, and this moved nothing.
@@ -468,9 +506,22 @@ class WDAClient:
                 file=sys.stderr,
                 flush=True,
             )
-        return sid
 
     # ---- perception --------------------------------------------------------
+
+    def set_snapshot_depth(self, depth: int) -> None:
+        """Change the accessibility snapshot depth for the current session.
+
+        Exposed for the one case worth paying for: a screen that genuinely
+        nests deeper than the default 8. Every step up costs real time on the
+        phone (11 → 5.9s, 12 → 8.1s per read, measured), so callers should drop
+        back down afterwards.
+        """
+        depth = int(depth)
+        config.WDA_SNAPSHOT_DEPTH = depth
+        sid = self.ensure_session()
+        self._request("POST", f"/session/{sid}/appium/settings",
+                      {"settings": {"snapshotMaxDepth": depth}})
 
     def screenshot(self) -> bytes:
         """Current screen as PNG bytes (pixel resolution = points * scale)."""
