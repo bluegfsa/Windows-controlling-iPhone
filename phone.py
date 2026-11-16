@@ -823,7 +823,7 @@ def cmd_flow(a) -> int:
     spec = json.loads(path.read_text(encoding="utf-8"))
     steps = spec.get("steps", spec)
     # Simple templating so one example covers many targets: any top-level string
-    # key becomes {{key}} inside the steps (e.g. {"dest": "夏良村"} -> "{{dest}}").
+    # key becomes {{key}} inside the steps (e.g. {"dest": "广州塔"} -> "{{dest}}").
     if isinstance(spec, dict):
         for key, val in spec.items():
             if not isinstance(val, str) or key in ("name", "note"):
