@@ -1,0 +1,34 @@
+name: build-phonemic
+on:
+  push:
+    paths: ["ios/**", ".github/workflows/build-phonemic.yml"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile PhoneMic (arm64 iOS)
+        run: |
+          SDK=$(xcrun -sdk iphoneos -show-sdk-path)
+          echo "SDK: $SDK"
+          mkdir -p build/Payload/PhoneMic.app
+          xcrun -sdk iphoneos swiftc -O \
+            -target arm64-apple-ios15.0 \
+            -sdk "$SDK" \
+            -module-name PhoneMic \
+            ios/main.swift -o build/Payload/PhoneMic.app/PhoneMic
+          cp ios/Info.plist build/Payload/PhoneMic.app/Info.plist
+          # 二进制里嵌入最小版本号，避免安装器报警
+          plutil -replace MinimumOSVersion -string "15.0" build/Payload/PhoneMic.app/Info.plist
+          # ad-hoc 签名保证 bundle 结构有效（Sideloadly 会用开发者证书重签）
+          codesign --force --sign - build/Payload/PhoneMic.app
+          cd build && zip -qry PhoneMic-unsigned.ipa Payload
+
+      - name: Upload ipa artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PhoneMic-ipa
+          path: build/PhoneMic-unsigned.ipa
