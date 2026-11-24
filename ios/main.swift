@@ -134,6 +134,7 @@ final class AudioCore: NSObject {
     private var running = false
     private var lastBufferAt = Date()
     private var lastMeterAt = Date(timeIntervalSince1970: 0)
+    private var lastRestartAt = Date(timeIntervalSince1970: 0)
     private var watchdog: Timer?
     private var silentBuffer: AVAudioPCMBuffer?
 
@@ -156,8 +157,12 @@ final class AudioCore: NSObject {
     // MARK: 生命周期
 
     func start() throws {
-        running = true
-        try startEngine()
+        do {
+            try startEngine()
+        } catch {
+            running = false
+            throw error
+        }
         startWatchdog()
     }
 
@@ -230,6 +235,9 @@ final class AudioCore: NSObject {
 
     private func restart(_ why: String) {
         guard running else { return }
+        // 去抖：重新激活会话本身会再发一次 routeChange，不去抖会自己触发自己
+        if Date().timeIntervalSince(lastRestartAt) < 3.0 { return }
+        lastRestartAt = Date()
         onState?("自动恢复（\(why)）…")
         teardown()
         do {
